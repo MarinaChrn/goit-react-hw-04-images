@@ -1,42 +1,38 @@
 import { StyledButton, StyledButtonlabel, StyledInput, StyledSearchbarHead, StyledSearchForm } from "./Searchbar.styled"
-import { Component } from "react";
+import { useState } from "react";
 import PropTypes from 'prop-types'
 
-export class Searchbar extends Component {
-    state = {
-        value: ' ',
+export const Searchbar = ({onSubmit})=> {
+    const [value, setValue] = useState('');
+
+    const handleChange = ({target: {value}})=> {
+        setValue(value.toLowerCase())
     }
 
-    handleChange = ({target: {value}})=> {
-        this.setState({value: value.toLowerCase()})
-    }
-
-    handleSubmit = e => {
+    const handleSubmit = e => {
         e.preventDefault();
-        if (this.state.value.length!==0) {
-            this.props.onSubmit(this.state.value);
-            this.setState({value: ''})
+        if (value.length!==0) {
+            onSubmit(value);
+            setValue('')
         }
     }
 
-    render (){
-        return (
-            <StyledSearchbarHead>
-            <StyledSearchForm  onSubmit={this.handleSubmit}>
-                <StyledButton type="submit">
-                <StyledButtonlabel>Search</StyledButtonlabel>
-                </StyledButton>
-
-                <StyledInput
-                type="text"
-                autoComplete="off"
-                autoFocus value={this.state.value}
-                placeholder="Search images and photos" name="search" onChange={this.handleChange}
-                />
-            </StyledSearchForm>
-            </StyledSearchbarHead>
-        )
-    }
+    return (
+        <StyledSearchbarHead>
+        <StyledSearchForm  onSubmit={handleSubmit}>
+            <StyledButton type="submit">
+            <StyledButtonlabel>Search</StyledButtonlabel>
+            </StyledButton>
+        
+            <StyledInput
+            type="text"
+            autoComplete="off"
+            autoFocus value={value}
+            placeholder="Search images and photos" name="search" onChange={handleChange}
+            />
+        </StyledSearchForm>
+        </StyledSearchbarHead>
+    )
 }
 
 Searchbar.propTypes = {
