@@ -4,15 +4,20 @@ import { Searchbar } from "./searchbar/Searchbar";
 
 export const App = ()=> {
   const [value, setValue] = useState('');
+  const [page, setPage] = useState(1)
   
   const handleSubmit = (value) =>{
     setValue(value)
   }
 
+  const handleNewPage = () => {
+    setPage(page+1)
+  }
+
   return (
     <div>
       <Searchbar onSubmit={handleSubmit}/>
-      <ImageGallery imgValue={value}/>
+      {(value.length!==0)&&<ImageGallery imgValue={value} newPage={handleNewPage} page={page}/>}
     </div>
   );
 }

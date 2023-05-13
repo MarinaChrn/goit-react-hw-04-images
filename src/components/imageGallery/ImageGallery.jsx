@@ -6,6 +6,7 @@ import { Loader } from "components/loader/Loader"
 import { LoadMore } from "components/loadMore/LoadMore"
 import { Modal } from "components/modal/Modal"
 import PropTypes from 'prop-types'
+import { useRef } from "react"
 
 const ERROR_MESSAGE = "Не вийшло взяти дані, спробуйте ще раз"
 
@@ -92,17 +93,18 @@ const ERROR_MESSAGE = "Не вийшло взяти дані, спробуйте
 //     }
 // }
 
-export const ImageGallery = ({imgValue})=> {
-    const [value, setValue] = useState(imgValue);
+export const ImageGallery = ({imgValue, newPage, page})=> {
+    const [value, setValue] = useState('');
     const [images, setImages] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [page, setPage] = useState(1);
     const [total, setTotal] = useState(0);
     const [modalOpen, setModalOpen] = useState(false);
     const [modalData, setModalData] = useState('');
-
     
+    // useEffect(()=>{
+    //     const {current: arrayImages} = useRef(images);
+    // }, [images])
 
     // const fetchSearch = useCallback((search,page) => {
     //     try {
@@ -128,17 +130,26 @@ export const ImageGallery = ({imgValue})=> {
     // }, [images])
 
     useEffect(()=> {
-        setValue(imgValue.trim())
-        setImages([]);
-        setPage(1);
+        // const arrayImages = images
+        if (!imgValue) {
+            return;
+        }
+
+        if (page===1) {
+            setImages([])
+        }
+
+        async function fetchSearch () {  
+            // console.log(page)   
             try {
                 setIsLoading(true);
                 setError(null);
-                const fetchedSearch = fetchData(imgValue, 1);
+                const fetchedSearch = fetchData(imgValue, page)
                 fetchedSearch.then(response=> {
                     if (images!==response.hits) {
                         setImages([...images, response.hits]);
                         setTotal(response.total);
+                        // controller=null;
                     }
                 })
             } catch(error) {
@@ -146,7 +157,43 @@ export const ImageGallery = ({imgValue})=> {
             } finally {
                 setIsLoading(false);
             }
-    },[imgValue,images])
+        }
+
+        // fetchSearch(page,images,imgValue);
+        // return;
+
+
+        // if (imgValue.trim()!==value.trim()) {
+        //     console.log(imgValue)
+        //     setValue(imgValue.trim())
+        //     setPage(1);
+        //     setImages([]);
+        //     fetchSearch(1,[],imgValue)
+        // }
+        // if (page!==1) {
+        //     fetchSearch(page,images,value)
+        //     return;
+        // }
+        // console.log(value)
+        // setValue(imgValue.trim())
+        // setImages([]);
+        // setPage(1);
+            // try {
+            //     setIsLoading(true);
+            //     setError(null);
+            //     const fetchedSearch = fetchData(imgValue, 1);
+            //     fetchedSearch.then(response=> {
+            //         if (images!==response.hits) {
+            //             setImages([...images, response.hits]);
+            //             setTotal(response.total);
+            //         }
+            //     })
+            // } catch(error) {
+            //     setError(ERROR_MESSAGE);
+            // } finally {
+            //     setIsLoading(false);
+            // }
+    },[images,imgValue,page])
 
     const handleCloseModal=()=> {
         setModalOpen(false);
@@ -157,12 +204,13 @@ export const ImageGallery = ({imgValue})=> {
         setModalOpen(true);
     }
 
-    const handleClick=()=>{
-        const newPage = page+1;
-        setPage(newPage);
-        // const addImages =()=> fetchSearch(imgValue,newPage);
-        // addImages()
-    }
+    // const handleClick=()=>{
+    //     const newPage = page+1;
+    //     setPage(newPage);
+    //     // console.log(newPage)
+    //     // const addImages =()=> fetchSearch(imgValue,newPage);
+    //     // addImages()
+    // }
 
     const imagesArray = [];
     images.map(image=> imagesArray.push(...image));
@@ -176,12 +224,12 @@ export const ImageGallery = ({imgValue})=> {
                     <ImageGalleryItem id={image.id} key={image.id} smallImg={image.webformatURL} bigImg={image.largeImageURL} onClick={handleOpenModal}/>
                 ))}
             </StyledImageGallery>}
-            {imagesArray.length>0&&total>12&&imagesArray.length<=maxImages&&<LoadMore handleClick={handleClick}/>}
+            {imagesArray.length>0&&total>12&&imagesArray.length<=maxImages&&<LoadMore handleClick={newPage}/>}
             {modalOpen&&<Modal onClose={handleCloseModal} modalData={modalData}/>}
         </div>
     )
 }
 
 ImageGallery.propTypes = {
-    value: PropTypes.string.isRequired
+    value: PropTypes.string
 }
