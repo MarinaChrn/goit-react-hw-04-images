@@ -6,8 +6,12 @@ export const App = ()=> {
   const [value, setValue] = useState('');
   const [page, setPage] = useState(1)
   
-  const handleSubmit = (value) =>{
-    setValue(value)
+  const handleSubmit = (newValue) =>{
+    if (value!==newValue) {
+      setValue(newValue)
+      setPage(1);
+    }
+    
   }
 
   const handleNewPage = () => {

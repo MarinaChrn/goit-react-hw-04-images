@@ -101,36 +101,8 @@ export const ImageGallery = ({imgValue, newPage, page})=> {
     const [total, setTotal] = useState(0);
     const [modalOpen, setModalOpen] = useState(false);
     const [modalData, setModalData] = useState('');
-    
-    // useEffect(()=>{
-    //     const {current: arrayImages} = useRef(images);
-    // }, [images])
-
-    // const fetchSearch = useCallback((search,page) => {
-    //     try {
-    //         setIsLoading(true);
-    //         setError(null);
-    //         const fetchedSearch = fetchData(search, page);
-    //         fetchedSearch.then(response=> {
-    //             // this.setState(prevState=>{
-    //             //     if (prevState.images!==response.hits) {
-    //             //         return ({images: [...prevState.images, response.hits], total: response.total})
-    //             //     } 
-    //             // })
-    //             if (images!==response.hits) {
-    //                 setImages([...images, response.hits]);
-    //                 setTotal(response.total);
-    //             }
-    //         })
-    //     } catch(error) {
-    //         setError(ERROR_MESSAGE);
-    //     } finally {
-    //         setIsLoading(false);
-    //     }
-    // }, [images])
 
     useEffect(()=> {
-        // const arrayImages = images
         if (!imgValue) {
             return;
         }
@@ -139,18 +111,15 @@ export const ImageGallery = ({imgValue, newPage, page})=> {
             setImages([])
         }
 
-        async function fetchSearch () {  
-            // console.log(page)   
+        async function fetchSearch () {    
             try {
                 setIsLoading(true);
                 setError(null);
                 const fetchedSearch = fetchData(imgValue, page)
                 fetchedSearch.then(response=> {
-                    if (images!==response.hits) {
-                        setImages([...images, response.hits]);
+                        setImages(prevState=>[...prevState, response.hits]);
                         setTotal(response.total);
-                        // controller=null;
-                    }
+                        
                 })
             } catch(error) {
                 setError(ERROR_MESSAGE);
@@ -158,42 +127,8 @@ export const ImageGallery = ({imgValue, newPage, page})=> {
                 setIsLoading(false);
             }
         }
-
-        // fetchSearch(page,images,imgValue);
-        // return;
-
-
-        // if (imgValue.trim()!==value.trim()) {
-        //     console.log(imgValue)
-        //     setValue(imgValue.trim())
-        //     setPage(1);
-        //     setImages([]);
-        //     fetchSearch(1,[],imgValue)
-        // }
-        // if (page!==1) {
-        //     fetchSearch(page,images,value)
-        //     return;
-        // }
-        // console.log(value)
-        // setValue(imgValue.trim())
-        // setImages([]);
-        // setPage(1);
-            // try {
-            //     setIsLoading(true);
-            //     setError(null);
-            //     const fetchedSearch = fetchData(imgValue, 1);
-            //     fetchedSearch.then(response=> {
-            //         if (images!==response.hits) {
-            //             setImages([...images, response.hits]);
-            //             setTotal(response.total);
-            //         }
-            //     })
-            // } catch(error) {
-            //     setError(ERROR_MESSAGE);
-            // } finally {
-            //     setIsLoading(false);
-            // }
-    },[images,imgValue,page])
+        fetchSearch ()
+    },[imgValue,page])
 
     const handleCloseModal=()=> {
         setModalOpen(false);
@@ -204,17 +139,10 @@ export const ImageGallery = ({imgValue, newPage, page})=> {
         setModalOpen(true);
     }
 
-    // const handleClick=()=>{
-    //     const newPage = page+1;
-    //     setPage(newPage);
-    //     // console.log(newPage)
-    //     // const addImages =()=> fetchSearch(imgValue,newPage);
-    //     // addImages()
-    // }
-
     const imagesArray = [];
     images.map(image=> imagesArray.push(...image));
     const maxImages = total/12;
+
     return (
         <div>
             {isLoading && <Loader/>}
@@ -231,5 +159,7 @@ export const ImageGallery = ({imgValue, newPage, page})=> {
 }
 
 ImageGallery.propTypes = {
-    value: PropTypes.string
+    imgValue: PropTypes.string.isRequired,
+    newPage: PropTypes.func.isRequired,
+    page: PropTypes.number.isRequired,
 }
